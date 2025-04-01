@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/s19835/pg-opt-toolkit/internal/analyzer"
 	"github.com/s19835/pg-opt-toolkit/internal/config"
@@ -68,7 +69,8 @@ func analyzeQuery(query string) {
 		log.Fatalf("Failed to analyze query: %v", err)
 	}
 
-	fmt.Println("Query Analysis:")
+	fmt.Println("\nQuery Analysis:")
+	fmt.Println("---------------")
 	fmt.Println(analysis)
 
 	// identify bottlenecks
@@ -82,5 +84,8 @@ func analyzeQuery(query string) {
 }
 
 func main() {
-	analyzeQuery("SELECT * FROM urls")
+	if err := rootCommand.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
