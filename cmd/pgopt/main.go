@@ -4,6 +4,9 @@ import (
 	"log"
 
 	"github.com/s19835/pg-opt-toolkit/internal/config"
+	"github.com/s19835/pg-opt-toolkit/internal/connector"
+	"github.com/s19835/pg-opt-toolkit/pkg/models"
+	"github.com/s19835/pg-opt-toolkit/pkg/queryplan"
 	"github.com/spf13/cobra"
 )
 
@@ -32,10 +35,31 @@ func analyzeQuery(query string) {
 	cfg, err := config.LoadConfig()
 
 	if err != nil {
-		log.Fatalf("Fail to load config: %v", err)
+		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	log.Println(query, cfg.URL)
+	// connect to database
+	conn, err := connector.NewPGConnector(models.PGConfig{
+		URL: cfg.URL,
+	})
+	if err != nil {
+		log.Fatalf("Error connecting database: %v", err)
+	}
+	defer conn.Close()
+
+	// analyze the provided query
+	planJSON, err := conn.ExplainAnalyze(query)
+	if err != nil {
+		log.Fatalf("Unable to analyze query: %v", err)
+	}
+
+	// parse query plan
+	plan, err := queryplan.ParsePlanJSON(planJSON)
+	if err != nil {
+		log.Fatalf("Failed to parse query: %v", err)
+	}
+
+	log.Println(plan)
 }
 
 func main() {

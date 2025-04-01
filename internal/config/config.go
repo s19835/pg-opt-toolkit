@@ -47,7 +47,7 @@ func validatePostgresURL(dbURL string) error {
 	}
 
 	// Check if URL starts with postgres:// or postgresql://
-	if !strings.HasPrefix(dbURL, "postgres://") || !strings.HasPrefix(dbURL, "postgresql://") {
+	if !strings.HasPrefix(dbURL, "postgres://") && !strings.HasPrefix(dbURL, "postgresql://") {
 		return fmt.Errorf("invalid URL scheme, must start with postgres:// or postgresql://")
 	}
 
