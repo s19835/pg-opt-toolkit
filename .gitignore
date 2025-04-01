@@ -35,6 +35,7 @@ vendor/
 /config.yaml
 /config.yml
 /config.local.*
+config.yaml
 
 # Build output
 /dist/
