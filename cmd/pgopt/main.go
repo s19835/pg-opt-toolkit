@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/s19835/pg-opt-toolkit/internal/analyzer"
 	"github.com/s19835/pg-opt-toolkit/internal/config"
 	"github.com/s19835/pg-opt-toolkit/internal/connector"
 	"github.com/s19835/pg-opt-toolkit/pkg/models"
@@ -59,9 +61,26 @@ func analyzeQuery(query string) {
 		log.Fatalf("Failed to parse query: %v", err)
 	}
 
-	log.Println(plan)
+	// analyze query
+	analyzer := analyzer.NewQueryAnalyzer()
+	analysis, err := analyzer.Analyze(plan)
+	if err != nil {
+		log.Fatalf("Failed to analyze query: %v", err)
+	}
+
+	fmt.Println("Query Analysis:")
+	fmt.Println(analysis)
+
+	// identify bottlenecks
+	bottlenecks := analyzer.IdentifyBottlenecks(plan)
+	if len(bottlenecks) > 0 {
+		fmt.Println("\nPotential bottlenecks:")
+		for _, b := range bottlenecks {
+			fmt.Println("-", b)
+		}
+	}
 }
 
 func main() {
-	analyzeQuery("query")
+	analyzeQuery("SELECT * FROM urls")
 }
