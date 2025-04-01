@@ -1,0 +1,2 @@
+db:
+  url: "postgres://shortener:zixwox-dExqow-nirgy@localhost:5432/shortly?sslmode=prefer"

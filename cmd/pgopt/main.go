@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+
+	"github.com/s19835/pg-opt-toolkit/internal/config"
 	"github.com/spf13/cobra"
 )
 
@@ -26,4 +29,15 @@ func init() {
 
 func analyzeQuery(query string) {
 	// load config
+	cfg, err := config.LoadConfig()
+
+	if err != nil {
+		log.Fatalf("Fail to load config: %v", err)
+	}
+
+	log.Println(query, cfg.URL)
+}
+
+func main() {
+	analyzeQuery("query")
 }
