@@ -162,6 +162,27 @@ func TestCostSavingsEstimation(t *testing.T) {
 	assert.Greater(t, savings.CostReduction, 50.0) //should be > 50 cost unit
 }
 
+func TestScaleAnalysis(t *testing.T) {
+	var plan queryplan.QueryPlan
+	err := json.Unmarshal([]byte(complexPlanJSON), &plan)
+	assert.NoError(t, err)
+
+	analyzer := analyzer.NewQueryAnalyzer()
+
+	//Test row processing rate
+	hashJoinNode := findNode(&plan.Plan, "Hash Join", "")
+	assert.NotNil(t, hashJoinNode)
+
+	processingRate := analyzer.CalculateProcessingRate(
+		hashJoinNode.ActualRows,
+		hashJoinNode.ActualTime,
+		hashJoinNode.Loops,
+	)
+
+	// Should process at least 50 rows/ms (10000 rows / 123.45ms ≈ 81 rows/ms)
+	assert.Greater(t, processingRate, 50.0)
+}
+
 func findNode(node *models.PlanNode, nodeType string, relation string) *models.PlanNode {
 	if node.NodeType == nodeType && (relation == "" || node.RelationName == relation) {
 		return node
