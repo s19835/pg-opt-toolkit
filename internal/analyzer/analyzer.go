@@ -50,11 +50,37 @@ func (a *QueryAnalyzer) IdentifyBottlenecks(plan *queryplan.QueryPlan) []string 
 }
 
 func (a *QueryAnalyzer) findBottlenecks(node *models.PlanNode, bottlenecks *[]string) {
-	// Simple heuristic: nodes taking more than 100ms or with high relative cost
+	// Detect slow operations (over 100ms)
 	if node.ActualTime > 100 {
-		*bottlenecks = append(*bottlenecks, fmt.Sprintf("Slow operation: %s (%.2f ms)", node.NodeType, node.ActualTime))
+		*bottlenecks = append(*bottlenecks,
+			fmt.Sprintf("Slow operation: %s (%.2f ms)", node.NodeType, node.ActualTime))
 	}
 
+	// Detect inefficient scans
+	if node.NodeType == "Seq Scan" {
+		// Calculate rows processed per millisecond
+		rowsPerMs := float64(node.ActualRows) / node.ActualTime
+
+		relationInfo := ""
+		if node.RelationName != "" {
+			relationInfo = fmt.Sprintf(" on %s", node.RelationName)
+		}
+
+		// Flag as inefficient if < 50 rows/ms or if scanning large table (>1000 rows)
+		if rowsPerMs < 50 || node.ActualRows > 1000 {
+			*bottlenecks = append(*bottlenecks,
+				fmt.Sprintf("Inefficient operation: Seq Scan%s (%.2f ms for %d rows)",
+					relationInfo, node.ActualTime, node.ActualRows))
+		}
+
+		// Check for filter conditions that could use indexes
+		if node.Filter != "" {
+			*bottlenecks = append(*bottlenecks,
+				fmt.Sprintf("Potential optimization: Filter on %s could use index", node.Filter))
+		}
+	}
+
+	// Recursively check child nodes
 	for _, child := range node.Plans {
 		a.findBottlenecks(child, bottlenecks)
 	}

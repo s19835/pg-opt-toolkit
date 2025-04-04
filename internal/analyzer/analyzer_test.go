@@ -126,11 +126,12 @@ func TestBottlenecksDetection(t *testing.T) {
 	bottlenecks := analyzer.IdentifyBottlenecks(&plan)
 
 	expectedBottlenecks := []string{
+		"Slow operation: Limit (1256.78 ms)",
 		"Slow operation: Sort (1255.12 ms)",
 		"Slow operation: Hash Join (123.45 ms)",
 		"Inefficient operation: Seq Scan on users (25.45 ms for 10000 rows)",
-		"Potential optimization: Filter on status could use index",
-		"Potential optimization: Filter on created_at could use index",
+		"Potential optimization: Filter on (status = 'active') could use index",
+		"Potential optimization: Filter on (created_at > (now() - '30 days'::interval)) could use index",
 	}
 
 	assert.Len(t, bottlenecks, len(expectedBottlenecks))
