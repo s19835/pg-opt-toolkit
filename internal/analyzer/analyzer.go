@@ -59,3 +59,12 @@ func (a *QueryAnalyzer) findBottlenecks(node *models.PlanNode, bottlenecks *[]st
 		a.findBottlenecks(child, bottlenecks)
 	}
 }
+
+// for testing and optimizing
+func (a *QueryAnalyzer) EstimateSavings(current *models.PlanNode, optimized *models.PlanNode) *models.OptimizationSavings {
+	return &models.OptimizationSavings{
+		TimeSaved:     current.ActualTime - optimized.ActualTime,
+		CostReduction: current.TotalCost - optimized.TotalCost,
+		RowsProcessed: current.ActualRows,
+	}
+}

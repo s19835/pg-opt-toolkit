@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/s19835/pg-opt-toolkit/internal/analyzer"
+	"github.com/s19835/pg-opt-toolkit/pkg/models"
 	"github.com/s19835/pg-opt-toolkit/pkg/queryplan"
 	"github.com/stretchr/testify/assert"
 )
@@ -136,4 +137,40 @@ func TestBottlenecksDetection(t *testing.T) {
 	for _, expected := range expectedBottlenecks {
 		assert.Contains(t, bottlenecks, expected)
 	}
+}
+
+func TestCostSavingsEstimation(t *testing.T) {
+	var plan queryplan.QueryPlan
+	err := json.Unmarshal([]byte(complexPlanJSON), &plan)
+	assert.NoError(t, err)
+
+	analyzer := analyzer.NewQueryAnalyzer()
+
+	// test seq scan node
+	seqScanNode := findNode(&plan.Plan, "Seq Scan", "users")
+	assert.NotNil(t, seqScanNode)
+
+	estimatedIndexScan := &models.PlanNode{
+		NodeType:    "Index Scan",
+		StartupCost: 5.00,
+		TotalCost:   50.00,
+		ActualTime:  2.50,
+	}
+
+	savings := analyzer.EstimateSavings(seqScanNode, estimatedIndexScan)
+	assert.Greater(t, savings.TimeSaved, 20.0)     //should be > 20ms
+	assert.Greater(t, savings.CostReduction, 50.0) //should be > 50 cost unit
+}
+
+func findNode(node *models.PlanNode, nodeType string, relation string) *models.PlanNode {
+	if node.NodeType == nodeType && (relation == "" || node.RelationName == relation) {
+		return node
+	}
+
+	for _, child := range node.Plans {
+		if found := findNode(child, nodeType, relation); found != nil {
+			return found
+		}
+	}
+	return nil
 }

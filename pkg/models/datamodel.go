@@ -19,3 +19,9 @@ type PlanNode struct {
 	Loops        int64       `json:"Loops"`
 	Plans        []*PlanNode `json:"Plans,omitempty"`
 }
+
+type OptimizationSavings struct {
+	TimeSaved     float64 //milliseconds
+	CostReduction float64 // unit cost
+	RowsProcessed int64   // rows affected
+}
