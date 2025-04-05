@@ -8,11 +8,9 @@ import (
 )
 
 type QueryPlan struct {
-	Plan     models.PlanNode `json:"Plan"`
-	Planning struct {
-		PlanningTime float64 `json:"Planning Time"`
-	} `json:"Planning"`
-	ExecutionTime float64 `json:"Execution Time"`
+	Plan          models.PlanNode `json:"Plan"`
+	PlanningTime  float64         `json:"Planning Time"`
+	ExecutionTime float64         `json:"Execution Time"`
 }
 
 func ParsePlanJSON(jsonData string) (*QueryPlan, error) {

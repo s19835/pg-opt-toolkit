@@ -109,8 +109,8 @@ func TestPerformanceMatrixCalculation(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Test latency measurement
-	assert.Contains(t, result, "Execution Time: 1268.12 ms")
-	assert.Contains(t, result, "Planning Time: 12.34 ms")
+	assert.Contains(t, result, "Execution Time: 1268.12 ms\n")
+	assert.Contains(t, result, "Planning Time: 12.34 ms\n")
 
 	// Test const measurement
 	assert.Contains(t, result, "Cost: 1024.58..1026.12")

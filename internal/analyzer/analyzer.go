@@ -17,8 +17,8 @@ func NewQueryAnalyzer() *QueryAnalyzer {
 func (a *QueryAnalyzer) Analyze(plan *queryplan.QueryPlan) (string, error) {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("Execution Time: %.2f", plan.ExecutionTime))
-	sb.WriteString(fmt.Sprintf("\nPlanning Time: %.2f", plan.Planning.PlanningTime))
+	sb.WriteString(fmt.Sprintf("Execution Time: %.2f ms", plan.ExecutionTime))
+	sb.WriteString(fmt.Sprintf("\nPlanning Time: %.2f ms", plan.PlanningTime))
 	sb.WriteString("\n")
 
 	a.analyzeNode(&plan.Plan, &sb, 0)
