@@ -1,4 +1,4 @@
-# PostgreSQL Query Optimizer Toolkit (Phase 1) version 0.1.0
+# PostgreSQL Query Optimizer Toolkit (Phase 1) version 0.1.1
 
 ## Project Overview
 
