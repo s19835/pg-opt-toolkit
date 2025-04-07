@@ -16,7 +16,7 @@ type PlanNode struct {
 	PlanWidth    int64       `json:"Plan Width"`
 	ActualTime   float64     `json:"Actual Total Time"`
 	ActualRows   int64       `json:"Actual Rows"`
-	Loops        int64       `json:"Loops"`
+	Loops        int64       `json:"Actual Loops"`
 	Filter       string      `json:"Filter,omitempty"`
 	Plans        []*PlanNode `json:"Plans,omitempty"`
 }

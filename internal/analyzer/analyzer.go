@@ -95,9 +95,9 @@ func (a *QueryAnalyzer) EstimateSavings(current *models.PlanNode, optimized *mod
 	}
 }
 
-func (a *QueryAnalyzer) CalculateProcessingRate(rows int64, time float64, loop int64) float64 {
-	if time <= 0 {
+func (a *QueryAnalyzer) CalculateProcessingRate(rows int64, time float64, loops int64) float64 {
+	if time <= 0 || rows <= 0 || loops <= 0 {
 		return 0
 	}
-	return float64(rows*loop) / time
+	return float64(rows*loops) / time
 }
